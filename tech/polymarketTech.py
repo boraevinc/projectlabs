@@ -204,8 +204,8 @@ def build_row(m, category_label):
 
     history = fetch_history(yes_token, close_ts)
     p7, p3, p1 = (price_at(history, close_ts - d * DAY) for d in (7, 3, 1))
-    if p7 is None and p3 is None and p1 is None:
-        return None  # no usable price history
+    if p7 is None or p3 is None or p1 is None:
+        return None  # need all three prices (market must have traded 7+ days)
 
     return {
         "slug": m.get("slug"),
@@ -276,7 +276,7 @@ def main():
     print(f"Wrote {len(rows)} rows to {args.out} (scanned {scanned} markets)",
           file=sys.stderr)
     if len(rows) < args.n:
-        print(f"Note: only {len(rows)} resolved Yes/No markets with price history "
+        print(f"Note: only {len(rows)} resolved Yes/No markets with full 7d/3d/1d prices "
               f"were found for tag '{args.tag}'. Try --related-tags.", file=sys.stderr)
 
 
